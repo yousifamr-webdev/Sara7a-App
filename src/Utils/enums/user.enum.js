@@ -1,13 +1,13 @@
 export const GenderEnum = {
-  Male: 0,
-  Female: 1,
+  Male: "Male",
+  Female: "Female",
 };
 
 export const RoleEnum = {
-  Admin: 0,
-  User: 1,
+  Admin: "Admin",
+  User: "User",
 };
 export const ProviderEnum = {
-  System: 0,
-  Google: 1,
+  System: "System",
+  Google: "Google",
 };

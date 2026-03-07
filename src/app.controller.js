@@ -5,19 +5,13 @@ import {
   NotFoundException,
 } from "./Utils/response/error.response.js";
 import { successResponse } from "./Utils/response/success.response.js";
+import cors from "cors";
 
 const bootstrap = async (app, express) => {
-  app.use(express.json());
+  app.use(express.json(), cors());
 
   await connectDB();
 
-  app.get("/", (req, res) => {
-    return successResponse({
-      res,
-      statusCode: 201,
-      message: "Hello from app controller.",
-    });
-  });
 
   app.use("/auth", authRouter);
 

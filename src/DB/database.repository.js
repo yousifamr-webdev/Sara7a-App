@@ -21,10 +21,10 @@ export const findById = async ({ model, id, select = "", options = {} }) => {
   const doc = model.findById(id).select(select || "");
 
   if (options?.populate) {
-    doc.populate(options.populate);
+    doc = doc.populate(options.populate);
   }
   if (options?.lean) {
-    doc.lean();
+    doc = doc.lean();
   }
   return await doc.exec();
 };
@@ -54,11 +54,12 @@ export const find = async ({
 
 export const create = async ({
   model,
-  data = [],
-  options = { validateBeforeSave: true },
+  data,
+  options,
 }) => {
-  const [doc] = (await model.create(data, options)) || [];
-  return doc;
+  const result = await model.create(data, options);
+
+  return Array.isArray(result) ? result[0] : result;
 };
 
 export const insertMany = async ({ model, data }) => {

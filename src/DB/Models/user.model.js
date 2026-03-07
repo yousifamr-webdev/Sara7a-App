@@ -33,21 +33,24 @@ const userSchema = new mongoose.Schema(
     DOB: Date,
     phone: String,
     gender: {
-      type: Number,
+      type: String,
       enum: Object.values(GenderEnum),
       default: GenderEnum.Male,
     },
     role: {
-      type: Number,
+      type: String,
       enum: Object.values(RoleEnum),
       default: RoleEnum.User,
     },
     provider: {
-      type: Number,
+      type: String,
       enum: Object.values(ProviderEnum),
       default: ProviderEnum.System,
     },
-    confirmEmail: Date,
+    confirmEmail: {
+      type: Boolean,
+      default: false,
+    },
     profilePic: String,
   },
   {
