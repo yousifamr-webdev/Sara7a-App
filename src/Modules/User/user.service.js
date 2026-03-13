@@ -59,7 +59,7 @@ export const uploadProfileImage = async (req, res) => {
     return BadRequestException({ message: "No file uploaded" });
   }
 
-  const imagePath = req.file.path;
+  const imagePath = req.file.finalPath;
 
   await findByIdAndUpdate({
     model: UserModel,
@@ -72,5 +72,26 @@ export const uploadProfileImage = async (req, res) => {
     statusCode: 200,
     message: "Image uploaded successfully",
     data: { file: req.file.filename },
+  });
+};
+
+export const uploadCoverPics = async (req, res) => {
+  if (!req.files?.length) {
+    return BadRequestException({ message: "No files uploaded" });
+  }
+
+  const coverPicsPaths = req.files.map((file) => file.finalPath);
+
+  await findByIdAndUpdate({
+    model: UserModel,
+    id: req.user._id,
+    update: { coverPics: coverPicsPaths },
+  });
+
+  return successResponse({
+    res,
+    statusCode: 200,
+    message: "Images uploaded successfully",
+    data: { files: coverPicsPaths },
   });
 };

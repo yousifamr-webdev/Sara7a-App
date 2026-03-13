@@ -4,7 +4,12 @@ import { authentication } from "../../Middleware/authentication.middleware.js";
 import { TokenType } from "../../Utils/enums/security.enum.js";
 import { authorization } from "../../Middleware/authorization.middleware.js";
 import { RoleEnum } from "../../Utils/enums/user.enum.js";
-import { upload } from "../../Middleware/multer.middleware.js";
+import {
+  allowedFileFormats,
+  localUpload,
+} from "../../Utils/multer/multer.config.js";
+import { validation } from "./../../Middleware/validation.middleware.js";
+import { coverPicSchema, profilePicSchema } from "./user.validation.js";
 
 const router = Router();
 
@@ -22,10 +27,26 @@ router.post(
 );
 
 router.post(
-  "/upload-profile",
+  "/upload-mainPic",
   authentication(),
-  upload.single("image"),
+  localUpload({
+    folderName: "User",
+    allowedFormat: allowedFileFormats.img,
+  }).single("profilePic"),
+  validation(profilePicSchema),
   userService.uploadProfileImage,
 );
+
+router.post(
+  "/upload-coverPics",
+  authentication(),
+  localUpload({
+    folderName: "User",
+    allowedFormat: allowedFileFormats.img,
+  }).array("coverPics"),
+  validation(coverPicSchema),
+  userService.uploadCoverPics,
+);
+
 
 export default router;

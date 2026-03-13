@@ -49,7 +49,11 @@ export const ForbiddenException = (
 
 export const globalErrorHandler = (error, req, res, next) => {
   const status = error.status ?? 500;
-  return res
-    .status(status)
-    .json({ message: error.message, stack: error.stack, status });
+
+  return res.status(status).json({
+    message: error.message,
+    status,
+    extra: error.extra,
+    stack: error.stack,
+  });
 };

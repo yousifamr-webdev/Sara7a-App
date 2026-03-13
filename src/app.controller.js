@@ -6,12 +6,14 @@ import {
 } from "./Utils/response/error.response.js";
 import { successResponse } from "./Utils/response/success.response.js";
 import cors from "cors";
+import path from "path"
 
 const bootstrap = async (app, express) => {
   app.use(express.json(), cors());
 
   await connectDB();
 
+  app.use("/uploads", express.static(path.resolve("./uploads")));
 
   app.use("/auth", authRouter);
 

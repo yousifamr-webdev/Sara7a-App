@@ -38,7 +38,7 @@ import OtpModel from "../../DB/Models/otp.model.js";
 import { sendEmail } from "../../Utils/security/sendEmail.security.js";
 
 export const signup = async (req, res) => {
-  const { firstName, lastName, email, password, phone, DOB, gender } = req.body;
+  const { firstName, lastName, email, password, phone, DOB, gender } = req.vbody;
 
   if (await findOne({ model: UserModel, filter: { email } }))
     throw ConflictException({ message: "User already exists." });
@@ -113,7 +113,7 @@ async function verifyGoogleToken(idToken) {
 }
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.vbody;
 
   const user = await findOne({ model: UserModel, filter: { email } });
 
