@@ -36,9 +36,11 @@ import {
 import { OAuth2Client } from "google-auth-library";
 import OtpModel from "../../DB/Models/otp.model.js";
 import { sendEmail } from "../../Utils/security/sendEmail.security.js";
+import { encryptValue } from "./../../Utils/security/encrypt.security.js";
 
 export const signup = async (req, res) => {
-  const { firstName, lastName, email, password, phone, DOB, gender } = req.vbody;
+  const { firstName, lastName, email, password, phone, DOB, gender } =
+    req.vbody;
 
   if (await findOne({ model: UserModel, filter: { email } }))
     throw ConflictException({ message: "User already exists." });
@@ -48,7 +50,9 @@ export const signup = async (req, res) => {
     algo: HashEnum.Argon,
   });
 
-  const encryptedPhone = CryptoJS.AES.encrypt(phone, ENCRYPTION_KEY).toString();
+  if (phone) {
+    const encryptedPhone = encryptValue({ value: phone });
+  }
 
   const user = await create({
     model: UserModel,
@@ -260,4 +264,3 @@ export const verifyEmail = async (req, res) => {
     message: "Email verified successfully",
   });
 };
-

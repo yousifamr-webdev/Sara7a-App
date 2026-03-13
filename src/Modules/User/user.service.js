@@ -11,6 +11,7 @@ import {
   UnauthorizedException,
 } from "../../Utils/response/error.response.js";
 import { successResponse } from "../../Utils/response/success.response.js";
+import { decryptValue } from "../../Utils/security/encrypt.security.js";
 import {
   decodeToken,
   generateToken,
@@ -23,6 +24,9 @@ import jwt from "jsonwebtoken";
 
 export const getUserProfile = async (req, res) => {
   const user = req.user;
+  if (user.phone) {
+    user.phone = decryptValue({ cipherText: user.phone });
+  }
 
   return successResponse({
     res,
@@ -93,5 +97,26 @@ export const uploadCoverPics = async (req, res) => {
     statusCode: 200,
     message: "Images uploaded successfully",
     data: { files: coverPicsPaths },
+  });
+};
+
+export const getPublicProfile = async (req, res) => {
+  const { profileId } = req.params;
+  const user = await findById({
+    model: UserModel,
+    id: profileId,
+    select:
+      "-password -role -confirmEmail -provider -createdAt -updatedAt -__v",
+  });
+
+  if (user.phone) {
+    user.phone = decryptValue({ cipherText: user.phone });
+  }
+
+  return successResponse({
+    res,
+    statusCode: 200,
+    message: "User profile retrieved succesfully.",
+    data: { user },
   });
 };

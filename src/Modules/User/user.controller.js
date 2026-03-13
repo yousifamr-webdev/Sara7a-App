@@ -9,7 +9,11 @@ import {
   localUpload,
 } from "../../Utils/multer/multer.config.js";
 import { validation } from "./../../Middleware/validation.middleware.js";
-import { coverPicSchema, profilePicSchema } from "./user.validation.js";
+import {
+  coverPicSchema,
+  getPublicProfileSchema,
+  profilePicSchema,
+} from "./user.validation.js";
 
 const router = Router();
 
@@ -48,5 +52,10 @@ router.post(
   userService.uploadCoverPics,
 );
 
+router.get(
+  "/share-profile/:profileId",
+  validation(getPublicProfileSchema),
+  userService.getPublicProfile,
+);
 
 export default router;

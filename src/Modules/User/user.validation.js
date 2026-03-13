@@ -1,4 +1,5 @@
 import joi from "joi";
+import { validateObjectIdFn } from "../../Middleware/validation.middleware.js";
 
 export const profilePicSchema = {
   file: joi
@@ -36,5 +37,14 @@ export const coverPicSchema = {
         })
         .required(),
     )
+    .required(),
+};
+
+export const getPublicProfileSchema = {
+  params: joi
+    .object()
+    .keys({
+      profileId: joi.string().custom(validateObjectIdFn).required(),
+    })
     .required(),
 };

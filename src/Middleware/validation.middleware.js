@@ -1,6 +1,7 @@
 import { GenderEnum } from "../Utils/enums/user.enum.js";
 import { BadRequestException } from "../Utils/response/error.response.js";
 import joi from "joi";
+import mongoose from "mongoose";
 
 export function validation(schema) {
   return (req, res, next) => {
@@ -47,3 +48,9 @@ export const CommonFieldValidations = {
   DOB: joi.date(),
   gender: joi.string().valid(...Object.values(GenderEnum)),
 };
+
+export function validateObjectIdFn(value, helpers) {
+  if (!mongoose.Types.ObjectId.isValid(value)) {
+    return helpers.message("invalid object id format");
+  }
+}
