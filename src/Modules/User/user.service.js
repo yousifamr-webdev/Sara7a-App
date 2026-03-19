@@ -18,12 +18,20 @@ import {
   getSignature,
   verifyToken,
 } from "../../Utils/security/token.security.js";
-import { findById, findByIdAndUpdate } from "./../../DB/database.repository.js";
+import {
+  findById,
+  findByIdAndUpdate,
+  findOne,
+} from "./../../DB/database.repository.js";
 import UserModel from "./../../DB/Models/user.model.js";
-import jwt from "jsonwebtoken";
+import { unlinkSync, existsSync } from "node:fs";
+import path from "node:path";
 
 export const getUserProfile = async (req, res) => {
-  const user = req.user;
+  const { userId } = req.params;
+
+  const user = await findById({ model: UserModel, id: userId });
+
   if (user.phone) {
     user.phone = decryptValue({ cipherText: user.phone });
   }
@@ -63,12 +71,14 @@ export const uploadProfileImage = async (req, res) => {
     return BadRequestException({ message: "No file uploaded" });
   }
 
+  const user = await findById({ model: UserModel, id: req.user._id });
+
   const imagePath = req.file.finalPath;
 
   await findByIdAndUpdate({
     model: UserModel,
     id: req.user._id,
-    update: { profilePic: imagePath },
+    update: { profilePic: imagePath, $push: { gallery: user.profilePic } },
   });
 
   return successResponse({
@@ -83,13 +93,24 @@ export const uploadCoverPics = async (req, res) => {
   if (!req.files?.length) {
     return BadRequestException({ message: "No files uploaded" });
   }
+  const user = await findById({ model: UserModel, id: req.user._id });
+  const existingPicCount = user.coverPics.length;
+  const newPicCount = req.files.length;
+
+  if (existingPicCount + newPicCount > 2) {
+    req.files.forEach((file) => {
+      unlinkSync(file.finalPath);
+    });
+
+    return BadRequestException({ message: "Max 2 cover pics allowed." });
+  }
 
   const coverPicsPaths = req.files.map((file) => file.finalPath);
 
   await findByIdAndUpdate({
     model: UserModel,
     id: req.user._id,
-    update: { coverPics: coverPicsPaths },
+    update: { $push: { coverPics: coverPicsPaths } },
   });
 
   return successResponse({
@@ -113,10 +134,32 @@ export const getPublicProfile = async (req, res) => {
     user.phone = decryptValue({ cipherText: user.phone });
   }
 
+  await findByIdAndUpdate({
+    model: UserModel,
+    id: profileId,
+    update: { visitCount: user.visitCount + 1 },
+  });
+
+  const { visitCount, ...publicUserData } = user.toObject();
+
   return successResponse({
     res,
     statusCode: 200,
     message: "User profile retrieved succesfully.",
-    data: { user },
+    data: { publicUserData },
+  });
+};
+
+export const deleteProfilePic = async (req, res) => {
+  const filePath = path.join(process.cwd(), req.user.profilePic);
+
+  if (existsSync(filePath)) {
+    unlinkSync(filePath);
+  }
+
+  return successResponse({
+    res,
+    statusCode: 200,
+    message: "Your profile pic was removed successfully",
   });
 };

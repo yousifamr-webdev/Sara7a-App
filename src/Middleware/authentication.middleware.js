@@ -1,10 +1,11 @@
-import { findById } from "../DB/database.repository.js";
+import { findById, findOne } from "../DB/database.repository.js";
 import UserModel from "../DB/Models/user.model.js";
 import { TokenType } from "../Utils/enums/security.enum.js";
 import {
   BadRequestException,
   UnauthorizedException,
 } from "../Utils/response/error.response.js";
+import { TokenModel } from "../DB/Models/token.model.js";
 import {
   decodeToken,
   getSignature,
@@ -15,12 +16,11 @@ export const authentication = (expectedTokenType = TokenType.Access) => {
   return async (req, res, next) => {
     const { authorization } = req.headers;
 
-      const [BearerKey, token] = authorization.split(" ");
-      
+    const [BearerKey, token] = authorization.split(" ");
 
-      if (BearerKey !== "Bearer") {
-          return BadRequestException({message:"Invalid authentication key."})
-      }
+    if (BearerKey !== "Bearer") {
+      return BadRequestException({ message: "Invalid authentication key." });
+    }
 
     const decodedToken = decodeToken(token);
 
@@ -40,13 +40,24 @@ export const authentication = (expectedTokenType = TokenType.Access) => {
           : refreshSignature,
     });
 
+    if (
+      await findOne({ model: TokenModel, filter: { jti: verifiedToken.jti } })
+    ) {
+      return UnauthorizedException({ message: "You need to login again." });
+    }
+
     const user = await findById({ model: UserModel, id: verifiedToken.sub });
 
     if (!user) {
       return UnauthorizedException({ message: "User not found." });
     }
 
+    if (verifiedToken.iat * 100 < user.changeCreditTime) {
+      return UnauthorizedException({ message: "You need to login." });
+    }
+
     req.user = user;
+    req.tokenPayload = verifiedToken;
 
     next();
   };

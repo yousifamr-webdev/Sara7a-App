@@ -53,11 +53,14 @@ const userSchema = new mongoose.Schema(
     },
     profilePic: String,
     coverPics: [String],
+    gallery: [String],
+    visitCount: { type: Number, default: 0 },
   },
   {
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
+    id: false,
   },
 );
 

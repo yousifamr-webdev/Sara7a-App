@@ -3,15 +3,11 @@ import * as authService from "./auth.service.js";
 import { successResponse } from "../../Utils/response/success.response.js";
 import { validation } from "../../Middleware/validation.middleware.js";
 import { loginSchema, signupSchema } from "./auth.validation.js";
-
+import { authentication } from "./../../Middleware/authentication.middleware.js";
 
 const router = Router();
 
-router.post(
-  "/signup",
-  validation(signupSchema),
-  authService.signup,
-);
+router.post("/signup", validation(signupSchema), authService.signup);
 
 router.post("/signup/gmail", async (req, res) => {
   const result = await authService.signupWithGmail(req.body.idToken);
@@ -26,5 +22,7 @@ router.post("/signup/gmail", async (req, res) => {
 router.post("/login", validation(loginSchema), authService.login);
 
 router.post("/verify-email", authService.verifyEmail);
+
+router.post("/logout", authentication(), authService.logout);
 
 export default router;

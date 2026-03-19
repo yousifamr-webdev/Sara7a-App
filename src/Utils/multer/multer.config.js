@@ -2,6 +2,8 @@ import multer from "multer";
 import { randomUUID } from "node:crypto";
 import path from "path";
 import { existsSync, mkdirSync } from "node:fs";
+import { findOne } from "../../DB/database.repository.js";
+import UserModel from "../../DB/Models/user.model.js";
 
 export const allowedFileFormats = {
   img: ["image/png", "image/jpg"],

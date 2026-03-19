@@ -37,6 +37,7 @@ import { OAuth2Client } from "google-auth-library";
 import OtpModel from "../../DB/Models/otp.model.js";
 import { sendEmail } from "../../Utils/security/sendEmail.security.js";
 import { encryptValue } from "./../../Utils/security/encrypt.security.js";
+import { TokenModel } from "./../../DB/Models/token.model.js";
 
 export const signup = async (req, res) => {
   const { firstName, lastName, email, password, phone, DOB, gender } =
@@ -50,10 +51,7 @@ export const signup = async (req, res) => {
     algo: HashEnum.Argon,
   });
 
-  if (phone) {
-    const encryptedPhone = encryptValue({ value: phone });
-  }
-
+  const encryptedPhone = encryptValue({ value: phone });
   const user = await create({
     model: UserModel,
     data: [
@@ -262,5 +260,34 @@ export const verifyEmail = async (req, res) => {
     res,
     statusCode: 200,
     message: "Email verified successfully",
+  });
+};
+
+export const logout = async (req, res) => {
+  const userId = req.user._id;
+  const tokenData = req.tokenPayload;
+  const logoutOptions = req.body.logoutOptions;
+
+  if (logoutOptions === "all") {
+    await updateOne({
+      model: UserModel,
+      filter: { _id: userId },
+      data: { changeCreditTime: new Date() },
+    });
+  } else {
+    await create({
+      model: TokenModel,
+      data: {
+        jti: tokenData.jti,
+        userId: userId,
+        expiredAt: (tokenData.iat + 60 * 60 * 24 * 365) * 1000,
+      },
+    });
+  }
+
+  return successResponse({
+    res,
+    statusCode: 200,
+    message: "Logout successful",
   });
 };

@@ -42,12 +42,12 @@ router.post(
 );
 
 router.post(
-  "/upload-coverPics",
+  "/upload-coverPics", 
   authentication(),
   localUpload({
     folderName: "User",
     allowedFormat: allowedFileFormats.img,
-  }).array("coverPics"),
+  }).array("coverPics",2),
   validation(coverPicSchema),
   userService.uploadCoverPics,
 );
@@ -57,5 +57,12 @@ router.get(
   validation(getPublicProfileSchema),
   userService.getPublicProfile,
 );
+
+router.delete(
+  "/delete-pfp",
+  authentication(),
+  userService.deleteProfilePic,
+);
+
 
 export default router;
