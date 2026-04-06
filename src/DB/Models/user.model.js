@@ -51,6 +51,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    confirmEmailExpires: {
+      type: Date,
+      default: () => new Date(Date.now() + 24 * 60 * 60 * 1000),
+    },
+    twoStepVerification: { type: Boolean, default: false },
     profilePic: String,
     coverPics: [String],
     gallery: [String],
@@ -63,6 +68,8 @@ const userSchema = new mongoose.Schema(
     id: false,
   },
 );
+
+userSchema.index({ confirmEmailExpires: 1 }, { expireAfterSeconds: 0 });
 
 userSchema
   .virtual("username")

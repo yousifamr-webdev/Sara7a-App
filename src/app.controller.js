@@ -1,4 +1,5 @@
 import connectDB from "./DB/connections.js";
+import { testRedisConnection} from "./DB/redis.connection.js";
 import { authRouter, userRouter } from "./Modules/index.js";
 import {
   globalErrorHandler,
@@ -6,12 +7,15 @@ import {
 } from "./Utils/response/error.response.js";
 import { successResponse } from "./Utils/response/success.response.js";
 import cors from "cors";
-import path from "path"
+import path from "path";
 
 const bootstrap = async (app, express) => {
   app.use(express.json(), cors());
 
   await connectDB();
+  await testRedisConnection();
+
+
 
   app.use("/uploads", express.static(path.resolve("./uploads")));
 

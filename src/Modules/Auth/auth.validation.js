@@ -32,3 +32,82 @@ export const signupSchema = {
     })
     .required(),
 };
+
+export const confirmEmailSchema = {
+  body: joi
+    .object()
+    .keys({
+      email: CommonFieldValidations.email.required(),
+      otp: CommonFieldValidations.OTP.required(),
+    })
+    .required(),
+};
+
+export const confirmTwoStepLoginSchema = {
+  body: joi
+    .object()
+    .keys({
+      email: CommonFieldValidations.email.required(),
+      otp: CommonFieldValidations.OTP.required(),
+    })
+    .required(),
+};
+
+export const confirmEmailResendOtpSchema = {
+  body: joi
+    .object()
+    .keys({
+      email: CommonFieldValidations.email.required(),
+    })
+    .required(),
+};
+
+export const forgetPasswordOtpSchema = {
+  body: joi
+    .object()
+    .keys({
+      email: CommonFieldValidations.email.required(),
+    })
+    .required(),
+};
+
+export const verifyForgetPasswordOtpSchema = {
+  body: joi
+    .object()
+    .keys({
+      email: CommonFieldValidations.email.required(),
+      otp: CommonFieldValidations.OTP.required(),
+    })
+    .required(),
+};
+
+export const resetPasswordOtpSchema = {
+  body: joi
+    .object()
+    .keys({
+      email: CommonFieldValidations.email.required(),
+      otp: CommonFieldValidations.OTP.required(),
+      password: CommonFieldValidations.password.required(),
+    })
+    .required(),
+};
+
+export const updatePasswordSchema = {
+  body: joi
+    .object()
+    .keys({
+      oldPassword: CommonFieldValidations.password.required(),
+      newPassword: CommonFieldValidations.password.required(),
+      confirmNewPassword: joi.string().valid(joi.ref("newPassword")).required(),
+    })
+    .required(),
+};
+
+export const confirmTwoStepVerificationSchema = {
+  body: joi
+    .object()
+    .keys({
+      otp: CommonFieldValidations.OTP.required(),
+    })
+    .required(),
+};

@@ -5,12 +5,12 @@ import {
   BadRequestException,
   UnauthorizedException,
 } from "../Utils/response/error.response.js";
-import { TokenModel } from "../DB/Models/token.model.js";
 import {
   decodeToken,
   getSignature,
   verifyToken,
 } from "../Utils/security/token.security.js";
+import * as redisMethods from "../DB/redis.service.js";
 
 export const authentication = (expectedTokenType = TokenType.Access) => {
   return async (req, res, next) => {
@@ -41,7 +41,12 @@ export const authentication = (expectedTokenType = TokenType.Access) => {
     });
 
     if (
-      await findOne({ model: TokenModel, filter: { jti: verifiedToken.jti } })
+      await redisMethods.get(
+        redisMethods.blackListTokenKey({
+          userId: verifiedToken.sub,
+          tokenId: verifiedToken.jti,
+        }),
+      )
     ) {
       return UnauthorizedException({ message: "You need to login again." });
     }

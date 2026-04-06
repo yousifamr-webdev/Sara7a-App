@@ -23,6 +23,7 @@ export const TOKEN_SIGNATURE_Admin_REFRESH =
 
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
+export const EMAIL_USER = process.env.EMAIL_USER;
+export const EMAIL_PASS = process.env.EMAIL_PASS;
 
-export const EMAIL_USER = process.env.EMAIL_USER
-export const EMAIL_PASS = process.env.EMAIL_PASS
+export const REDIS_URL = process.env.REDIS_URL;
