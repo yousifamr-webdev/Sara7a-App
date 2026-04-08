@@ -7,8 +7,12 @@ let isInitialized = false;
 
 async function initApp() {
   if (!isInitialized) {
-    await bootstrap(app, express);
-    isInitialized = true;
+    try {
+      await bootstrap(app, express, { serverless: true });
+      isInitialized = true;
+    } catch (err) {
+      console.error("Bootstrap failed:", err);
+    }
   }
 }
 
