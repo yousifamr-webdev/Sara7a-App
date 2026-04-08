@@ -21,10 +21,10 @@ const bootstrap = async (app, express) => {
     cors(),
     helmet(),
     rateLimit({
-      windowMs: 5 * 60 * 1000,
+      windowMs: 1 * 60 * 1000,
       limit: (req, res) => {
         const geoInfo = geolite.lookup(req.ip) || {};
-        return geoInfo.country == "EG" ? 3 : 1;
+        return geoInfo.country == "EG" ? 6 : 3;
       },
       message: "Too many requests.",
       legacyHeaders: false,
