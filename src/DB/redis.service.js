@@ -58,3 +58,17 @@ export function getOTPReqNoKey({ email, otpType }) {
 export function getOTPBlockedStatusKey({ email, otpType }) {
   return `OTP::${email}::${otpType}::Blocked`;
 }
+
+export async function setExpire({ key, exType = "EX", exValue = 30 }) {
+  const value = Math.floor(exValue);
+
+  if (exType === "EX") {
+    return await client.expire(key, value); 
+  }
+
+  if (exType === "PX") {
+    return await client.pexpire(key, value); 
+  }
+
+  throw new Error("Invalid expiration type. Use 'EX' or 'PX'");
+}

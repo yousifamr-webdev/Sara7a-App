@@ -39,7 +39,7 @@ const bootstrap = async (app, express) => {
           const hits = await redisMethods.incr(key);
 
           if (hits == 1) {
-            await redisMethods.setExpire(key, 60);
+            await redisMethods.setExpire({ key, exValue: 60 });
           }
 
           cb(null, hits);
