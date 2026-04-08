@@ -23,7 +23,7 @@ const bootstrap = async (app, express) => {
     rateLimit({
       windowMs: 5 * 60 * 1000,
       limit: (req, res) => {
-        const geoInfo = geolite.lookup(req.ip);
+        const geoInfo = geolite.lookup(req.ip) || {};
         return geoInfo.country == "EG" ? 3 : 1;
       },
       message: "Too many requests.",
