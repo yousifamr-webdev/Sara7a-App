@@ -1,9 +1,18 @@
 import express from "express";
 import serverless from "serverless-http";
-import bootstrap from "../app.controller.js";
+import bootstrap from "../src/app.controller.js";
 
 const app = express();
+let isInitialized = false;
 
-await bootstrap(app, express);
+async function initApp() {
+  if (!isInitialized) {
+    await bootstrap(app, express);
+    isInitialized = true;
+  }
+}
 
-export default serverless(app);
+export default async function handler(req, res) {
+  await initApp();
+  return serverless(app)(req, res);
+}
