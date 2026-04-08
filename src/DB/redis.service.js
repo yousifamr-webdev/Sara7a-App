@@ -14,6 +14,10 @@ export async function incr(key) {
   return await client.incr(key);
 }
 
+export async function decr(key) {
+  return await client.decr(key);
+}
+
 export async function mget(keys) {
   return await client.mget(keys);
 }
